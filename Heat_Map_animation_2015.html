@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<head>    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.5.1/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.5.1/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://rawcdn.githack.com/python-visualization/folium/master/folium/templates/leaflet.awesome.rotate.css"/>
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_7ceab9bb8a914351bd98b32d7ce6b4df {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+            </style>
+        
+    <script src="https://rawcdn.githack.com/nezasa/iso8601-js-period/master/iso8601.min.js"></script>
+    <script src="https://rawcdn.githack.com/socib/Leaflet.TimeDimension/master/dist/leaflet.timedimension.min.js"></script>
+    <script src="https://rawcdn.githack.com/python-visualization/folium/master/folium/templates/pa7_hm.min.js"></script>
+    <script src="https://rawcdn.githack.com/pa7/heatmap.js/develop/plugins/leaflet-heatmap/leaflet-heatmap.js"></script>
+    <link rel="stylesheet" href="http://apps.socib.es/Leaflet.TimeDimension/dist/leaflet.timedimension.control.min.css"/>
+    
+            <script>
+                var TDHeatmap = L.TimeDimension.Layer.extend({
+
+            initialize: function(data, options) {
+                var heatmapCfg = {
+                    radius: 15,
+                    maxOpacity: 1.,
+                    scaleRadius: false,
+                    useLocalExtrema: false,
+                    latField: 'lat',
+                    lngField: 'lng',
+                    valueField: 'count',
+                    defaultWeight : 1,
+                };
+                heatmapCfg = $.extend({}, heatmapCfg, options.heatmapOptions || {});
+                var layer = new HeatmapOverlay(heatmapCfg);
+                L.TimeDimension.Layer.prototype.initialize.call(this, layer, options);
+                this._currentLoadedTime = 0;
+                this._currentTimeData = {
+                    data: []
+                    };
+                this.data= data;
+                this.defaultWeight = heatmapCfg.defaultWeight || 1;
+            },
+            onAdd: function(map) {
+                L.TimeDimension.Layer.prototype.onAdd.call(this, map);
+                map.addLayer(this._baseLayer);
+                if (this._timeDimension) {
+                    this._getDataForTime(this._timeDimension.getCurrentTime());
+                }
+            },
+            _onNewTimeLoading: function(ev) {
+                this._getDataForTime(ev.time);
+                return;
+            },
+            isReady: function(time) {
+                return (this._currentLoadedTime == time);
+            },
+            _update: function() {
+                this._baseLayer.setData(this._currentTimeData);
+                return true;
+            },
+            _getDataForTime: function(time) {
+                    delete this._currentTimeData.data;
+                    this._currentTimeData.data = [];
+                    var data = this.data[time-1];
+                    for (var i = 0; i < data.length; i++) {
+                        this._currentTimeData.data.push({
+                                lat: data[i][0],
+                                lng: data[i][1],
+                                count: data[i].length>2 ? data[i][2] : this.defaultWeight
+                            });
+                        }
+                    this._currentLoadedTime = time;
+                    if (this._timeDimension && time == this._timeDimension.getCurrentTime() && !this._timeDimension.isLoading()) {
+                        this._update();
+                    }
+                    this.fire('timeload', {
+                        time: time
+                    });
+                }
+        });
+
+        L.Control.TimeDimensionCustom = L.Control.TimeDimension.extend({
+            initialize: function(index, options) {
+                var playerOptions = {
+                    buffer: 1,
+                    minBufferReady: -1
+                    };
+                options.playerOptions = $.extend({}, playerOptions, options.playerOptions || {});
+                L.Control.TimeDimension.prototype.initialize.call(this, options);
+                this.index = index;
+                },
+            _getDisplayDateFormat: function(date){
+                return this.index[date.getTime()-1];
+                }
+            });
+            </script>
+                
+    
+            <script>
+                var TDHeatmap = L.TimeDimension.Layer.extend({
+
+            initialize: function(data, options) {
+                var heatmapCfg = {
+                    radius: 15,
+                    maxOpacity: 1.,
+                    scaleRadius: false,
+                    useLocalExtrema: false,
+                    latField: 'lat',
+                    lngField: 'lng',
+                    valueField: 'count',
+                    defaultWeight : 1,
+                };
+                heatmapCfg = $.extend({}, heatmapCfg, options.heatmapOptions || {});
+                var layer = new HeatmapOverlay(heatmapCfg);
+                L.TimeDimension.Layer.prototype.initialize.call(this, layer, options);
+                this._currentLoadedTime = 0;
+                this._currentTimeData = {
+                    data: []
+                    };
+                this.data= data;
+                this.defaultWeight = heatmapCfg.defaultWeight || 1;
+            },
+            onAdd: function(map) {
+                L.TimeDimension.Layer.prototype.onAdd.call(this, map);
+                map.addLayer(this._baseLayer);
+                if (this._timeDimension) {
+                    this._getDataForTime(this._timeDimension.getCurrentTime());
+                }
+            },
+            _onNewTimeLoading: function(ev) {
+                this._getDataForTime(ev.time);
+                return;
+            },
+            isReady: function(time) {
+                return (this._currentLoadedTime == time);
+            },
+            _update: function() {
+                this._baseLayer.setData(this._currentTimeData);
+                return true;
+            },
+            _getDataForTime: function(time) {
+                    delete this._currentTimeData.data;
+                    this._currentTimeData.data = [];
+                    var data = this.data[time-1];
+                    for (var i = 0; i < data.length; i++) {
+                        this._currentTimeData.data.push({
+                                lat: data[i][0],
+                                lng: data[i][1],
+                                count: data[i].length>2 ? data[i][2] : this.defaultWeight
+                            });
+                        }
+                    this._currentLoadedTime = time;
+                    if (this._timeDimension && time == this._timeDimension.getCurrentTime() && !this._timeDimension.isLoading()) {
+                        this._update();
+                    }
+                    this.fire('timeload', {
+                        time: time
+                    });
+                }
+        });
+
+        L.Control.TimeDimensionCustom = L.Control.TimeDimension.extend({
+            initialize: function(index, options) {
+                var playerOptions = {
+                    buffer: 1,
+                    minBufferReady: -1
+                    };
+                options.playerOptions = $.extend({}, playerOptions, options.playerOptions || {});
+                L.Control.TimeDimension.prototype.initialize.call(this, options);
+                this.index = index;
+                },
+            _getDisplayDateFormat: function(date){
+                return this.index[date.getTime()-1];
+                }
+            });
+            </script>
+                
+</head>
+<body>    
+    
+            <div class="folium-map" id="map_7ceab9bb8a914351bd98b32d7ce6b4df" ></div>
+        
+</body>
+<script>    
+    
+            var map_7ceab9bb8a914351bd98b32d7ce6b4df = L.map(
+                "map_7ceab9bb8a914351bd98b32d7ce6b4df",
+                {
+                    center: [41.526811, -88.08632],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 13,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+            L.control.scale().addTo(map_7ceab9bb8a914351bd98b32d7ce6b4df);
+
+            
+
+        
+    
+            var tile_layer_a292c5e1c504489eb34731da49e77a3f = L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_7ceab9bb8a914351bd98b32d7ce6b4df);
+        
+    
+
+            var times = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
+
+            map_7ceab9bb8a914351bd98b32d7ce6b4df.timeDimension = L.timeDimension(
+                {times : times, currentTime: new Date(1)}
+            );
+
+            var heat_map_a3bccb6dac4f47839895c1f9d5d91ba1Control = new L.Control.TimeDimensionCustom(['Week and Year [12.0, 2015.0]', 'Week and Year [14.0, 2015.0]', 'Week and Year [16.0, 2015.0]', 'Week and Year [18.0, 2015.0]', 'Week and Year [20.0, 2015.0]', 'Week and Year [21.0, 2015.0]', 'Week and Year [22.0, 2015.0]', 'Week and Year [26.0, 2015.0]', 'Week and Year [28.0, 2015.0]', 'Week and Year [29.0, 2015.0]', 'Week and Year [30.0, 2015.0]', 'Week and Year [31.0, 2015.0]', 'Week and Year [32.0, 2015.0]', 'Week and Year [33.0, 2015.0]', 'Week and Year [34.0, 2015.0]', 'Week and Year [35.0, 2015.0]', 'Week and Year [36.0, 2015.0]', 'Week and Year [40.0, 2015.0]', 'Week and Year [42.0, 2015.0]', 'Week and Year [44.0, 2015.0]', 'Week and Year [45.0, 2015.0]', 'Week and Year [47.0, 2015.0]', 'Week and Year [49.0, 2015.0]'], {
+                autoPlay: false,
+                backwardButton: true,
+                displayDate: true,
+                forwardButton: true,
+                limitMinimumRange: 5,
+                limitSliders: true,
+                loopButton: true,
+                maxSpeed: 10,
+                minSpeed: 0.1,
+                playButton: true,
+                playReverseButton: true,
+                position: "bottomleft",
+                speedSlider: true,
+                speedStep: 0.1,
+                styleNS: "leaflet-control-timecontrol",
+                timeSlider: true,
+                timeSliderDrapUpdate: false,
+                timeSteps: 1
+                })
+                .addTo(map_7ceab9bb8a914351bd98b32d7ce6b4df);
+
+                var heat_map_a3bccb6dac4f47839895c1f9d5d91ba1 = new TDHeatmap([[[41.505340000000004, -88.10050201, 1.0, 12.0, 2015.0], [41.50676828, -88.09799957, 3.0, 12.0, 2015.0], [41.50761263, -88.09629822, 2.0, 12.0, 2015.0], [41.50937931, -88.0943985, 1.0, 12.0, 2015.0], [41.50969932, -88.09410095, 1.0, 12.0, 2015.0], [41.51070343, -88.09249878, 1.0, 12.0, 2015.0], [41.51449, -88.09020233, 4.0, 24.0, 4030.0], [41.53219226, -88.08429718, 1.0, 12.0, 2015.0], [41.53222226, -88.08450317, 1.0, 12.0, 2015.0], [41.53613, -88.08350372, 33.0, 12.0, 2015.0], [41.539320000000004, -88.08249664, 12.0, 12.0, 2015.0], [41.547340000000005, -88.08090209999999, 1.0, 12.0, 2015.0], [41.552, -88.07900238, 1.0, 12.0, 2015.0], [41.55632, -88.07790375, 26.0, 12.0, 2015.0], [41.56492, -88.07839966, 4.0, 12.0, 2015.0]], [[41.50652092, -88.09780121, 8.0, 14.0, 2015.0], [41.50793262, -88.09649658, 2.0, 14.0, 2015.0], [41.50806, -88.09349823, 14.0, 14.0, 2015.0], [41.52015, -88.08760071, 2.0, 14.0, 2015.0], [41.52036, -88.08840179, 2.0, 14.0, 2015.0], [41.520790000000005, -88.08740234, 1.0, 14.0, 2015.0], [41.527809999999995, -88.08670044, 1.0, 14.0, 2015.0], [41.538070000000005, -88.08260345, 4.0, 14.0, 2015.0], [41.53986, -88.08249664, 1.0, 14.0, 2015.0], [41.54009, -88.08139801, 1.0, 14.0, 2015.0], [41.54956, -88.0802002, 3.0, 14.0, 2015.0], [41.55682, -88.07779694, 4.0, 14.0, 2015.0]], [[41.50587274, -88.09950256, 31.0, 16.0, 2015.0], [41.5067561, -88.09629822, 5.0, 16.0, 2015.0], [41.50720262, -88.09660339, 2.0, 16.0, 2015.0], [41.50798553, -88.09629822, 14.0, 16.0, 2015.0], [41.508340000000004, -88.09380341, 5.0, 16.0, 2015.0], [41.50890931, -88.0943985, 6.0, 16.0, 2015.0], [41.50914, -88.09290314, 1.0, 16.0, 2015.0], [41.51044, -88.09169769, 2.0, 16.0, 2015.0], [41.51051, -88.09159851, 1.0, 16.0, 2015.0], [41.51110344, -88.09210205, 4.0, 16.0, 2015.0], [41.52028, -88.08820343, 1.0, 16.0, 2015.0], [41.52032, -88.08840179, 2.0, 16.0, 2015.0], [41.53047, -88.08509827, 1.0, 16.0, 2015.0], [41.53179226, -88.08470154, 11.0, 16.0, 2015.0], [41.539359999999995, -88.08260345, 1.0, 16.0, 2015.0], [41.54052, -88.08329773, 10.0, 16.0, 2015.0], [41.54823, -88.08049774, 5.0, 16.0, 2015.0], [41.56622, -88.07820129, 2.0, 16.0, 2015.0]], [[41.50553274, -88.09989929, 16.0, 18.0, 2015.0], [41.50595274, -88.10019684, 2.0, 18.0, 2015.0], [41.50655609, -88.09670258, 45.0, 18.0, 2015.0], [41.50705, -88.09629822, 1.0, 18.0, 2015.0], [41.50726263, -88.09609985, 18.0, 18.0, 2015.0], [41.50736609, -88.09680176, 15.0, 18.0, 2015.0], [41.50816263, -88.09609985, 5.0, 18.0, 2015.0], [41.53177226, -88.08470154, 2.0, 18.0, 2015.0], [41.55284231, -88.07820129, 1.0, 18.0, 2015.0]], [[41.50482237, -88.10169983, 3.0, 20.0, 2015.0], [41.52009, -88.08760071, 1.0, 20.0, 2015.0], [41.53179226, -88.08470154, 1.0, 20.0, 2015.0]], [[41.50647828, -88.09850311, 4.0, 21.0, 2015.0]], [[41.50444237, -88.10179901, 10.0, 22.0, 2015.0], [41.50703607, -88.09770203, 3.0, 22.0, 2015.0], [41.50706609, -88.09680176, 186.0, 22.0, 2015.0], [41.50732263, -88.09609985, 43.0, 22.0, 2015.0], [41.50778608, -88.09739685, 20.0, 22.0, 2015.0], [41.50836931, -88.0943985, 24.0, 22.0, 2015.0], [41.51047, -88.09190369, 2.0, 22.0, 2015.0], [41.51135344, -88.09230042, 16.0, 22.0, 2015.0], [41.5238, -88.08640289, 2.0, 22.0, 2015.0], [41.53815, -88.08339691, 4.0, 22.0, 2015.0], [41.53861, -88.08260345, 5.0, 22.0, 2015.0], [41.55641, -88.07790375, 29.0, 22.0, 2015.0], [41.56595, -88.07849884, 1.0, 22.0, 2015.0]], [[41.50429237, -88.10140228, 26.0, 26.0, 2015.0], [41.50436977, -88.10140228, 5.0, 26.0, 2015.0], [41.50546274, -88.09970093, 6.0, 26.0, 2015.0], [41.50667093, -88.09739685, 4.0, 26.0, 2015.0], [41.50767263, -88.09590149, 164.0, 26.0, 2015.0], [41.50814263, -88.09619904, 12.0, 26.0, 2015.0], [41.50866, -88.09339905, 15.0, 26.0, 2015.0], [41.50939932, -88.0943985, 283.0, 26.0, 2015.0], [41.51013343, -88.09249878, 248.0, 26.0, 2015.0], [41.51014, -88.09159851, 14.0, 26.0, 2015.0], [41.512881, -88.09140015, 16.0, 26.0, 2015.0], [41.512890000000006, -88.08959961, 5.0, 26.0, 2015.0], [41.51593, -88.08830261, 3.0, 26.0, 2015.0], [41.51757, -88.08789825, 11.0, 26.0, 2015.0], [41.518409999999996, -88.08840179, 3.0, 26.0, 2015.0], [41.523179999999996, -88.08730316, 1.0, 26.0, 2015.0], [41.523959999999995, -88.0861969, 5.0, 26.0, 2015.0], [41.53200226, -88.08470154, 2.0, 26.0, 2015.0], [41.55356, -88.07740021, 1.0, 26.0, 2015.0], [41.56776, -88.07800293, 2.0, 26.0, 2015.0], [41.56873, -88.07849884, 1.0, 26.0, 2015.0]], [[41.50444237, -88.10179901, 4.0, 28.0, 2015.0], [41.50612092, -88.09750366, 1.0, 28.0, 2015.0], [41.50702093, -88.09750366, 5.0, 28.0, 2015.0], [41.510490000000004, -88.09210205, 1.0, 28.0, 2015.0], [41.51695, -88.08899689, 3.0, 28.0, 2015.0], [41.51717899, -88.08830261, 5.0, 28.0, 2015.0], [41.51785, -88.08789825, 1.0, 28.0, 2015.0], [41.52584836, -88.08640289, 1.0, 28.0, 2015.0], [41.53187226, -88.08480072, 2.0, 28.0, 2015.0], [41.54761, -88.08090209999999, 1.0, 28.0, 2015.0], [41.5498, -88.08010101, 7.0, 28.0, 2015.0], [41.55693, -88.07779694, 5.0, 28.0, 2015.0], [41.55762, -88.07730103, 4.0, 28.0, 2015.0], [41.56474, -88.07820129, 26.0, 28.0, 2015.0]], [[41.50427977, -88.10150146, 4.0, 29.0, 2015.0], [41.51003343, -88.09249878, 301.0, 29.0, 2015.0], [41.51133344, -88.09200287, 1.0, 29.0, 2015.0], [41.53067, -88.08550262, 1.0, 29.0, 2015.0], [41.54911, -88.08039856, 1.0, 29.0, 2015.0]], [[41.55611, -88.07769775, 5.0, 30.0, 2015.0]], [[41.53264226, -88.084198, 2.0, 31.0, 2015.0], [41.547109999999996, -88.08110046, 2.0, 31.0, 2015.0]], [[41.50551274, -88.09970093, 5.0, 32.0, 2015.0], [41.50647828, -88.09850311, 1.0, 32.0, 2015.0], [41.509840000000004, -88.09290314, 2.0, 32.0, 2015.0], [41.54945, -88.07980347, 8.0, 32.0, 2015.0], [41.5635, -88.07810211, 4.0, 32.0, 2015.0]], [[41.53213226, -88.08460236, 7.0, 33.0, 2015.0], [41.54489, -88.08090209999999, 1.0, 33.0, 2015.0]], [[41.5228, -88.08719635, 2.0, 34.0, 2015.0]], [[41.540409999999994, -88.08270264, 1.0, 35.0, 2015.0]], [[41.5303825, -88.08519745, 1.0, 36.0, 2015.0], [41.53785991, -88.082901, 1.0, 36.0, 2015.0]], [[41.51125344, -88.09200287, 1.0, 40.0, 2015.0]], [[41.52047864, -88.08779907, 1.0, 42.0, 2015.0], [41.52842329999999, -88.08609772, 3.0, 42.0, 2015.0], [41.53733166, -88.08329773, 1.0, 42.0, 2015.0], [41.55492, -88.07779694, 1.0, 42.0, 2015.0], [41.56263, -88.07749939, 2.0, 42.0, 2015.0], [41.56347, -88.07800293, 1.0, 42.0, 2015.0]], [[41.50951932, -88.09390259, 0.0, 44.0, 2015.0], [41.56694, -88.07839966, 1.0, 44.0, 2015.0]], [[41.50597, -88.09899902, 4.0, 45.0, 2015.0], [41.50854552, -88.09519958, 1.0, 45.0, 2015.0], [41.52735, -88.08609772, 1.0, 45.0, 2015.0]], [[41.51695899, -88.08850098, 1.0, 47.0, 2015.0], [41.52694, -88.0861969, 1.0, 47.0, 2015.0], [41.53425303, -88.08409882, 1.0, 47.0, 2015.0]], [[41.527359999999994, -88.08609772, 1.0, 49.0, 2015.0], [41.53201226, -88.08450317, 2.0, 49.0, 2015.0], [41.546209999999995, -88.08039856, 2.0, 49.0, 2015.0], [41.554120000000005, -88.07790375, 20.0, 49.0, 2015.0], [41.55809, -88.07700348, 3.0, 49.0, 2015.0], [41.56625, -88.07839966, 3.0, 49.0, 2015.0]]],
+                {heatmapOptions: {
+                        radius: 8,
+                        minOpacity: 0.5,
+                        maxOpacity: 0.8,
+                        scaleRadius: false,
+                        useLocalExtrema: true,
+                        defaultWeight: 1,
+                        gradient: {0.2: 'blue', 0.4: 'lime', 0.6: 'orange', 1: 'red'}
+                    }
+                })
+                .addTo(map_7ceab9bb8a914351bd98b32d7ce6b4df);
+
+        
+</script>
