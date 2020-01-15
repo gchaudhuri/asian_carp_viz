@@ -6,6 +6,6 @@ The code is provided in "brandon_pool_fish_data_viz.ipynb" and the data file is 
 Use this [Binder URL](https://mybinder.org/v2/gh/gchaudhuri/asian_carp_viz/master) to check the interactive jupyter notebook. You can run the code and visualize the results.
 
 Notes:
-You can also download all the files. Use Jupyter Notebook within Anaconda environment to run the .ipynb file. The requirements.txt file should list all Python libraries that your notebooks depend on, and they will be installed using:
+You can also download all the files. Use Jupyter Notebook within Anaconda environment to run the .ipynb file. The requirements.txt file should list all Python libraries that this notebooks depend on, and they will be installed using:
 
 <code>pip install -r requirements.txt</code>
