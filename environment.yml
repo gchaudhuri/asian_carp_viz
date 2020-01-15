@@ -1,0 +1,9 @@
+name: fish_data_viz-environment
+channels:
+  - conda-forge
+dependencies:
+   - python=3.6
+   - pandas==0.25.0
+   - matplotlib
+   - folium
+   - datetime
